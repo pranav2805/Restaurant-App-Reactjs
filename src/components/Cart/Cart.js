@@ -1,21 +1,50 @@
+import { useContext } from "react";
+
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
+import CartContext from "../../store/cart-context";
+import CartItem from "./CartItem";
 
 const Cart = (props) => {
-  const cartItems = (
+  const cartCtx = useContext(CartContext);
+  const cartItems = cartCtx.items;
+  console.log("cartItems inside cart component", cartItems);
+  const mergedResult = {};
+  cartItems.forEach((item) => {
+    if (!mergedResult[item.id]) {
+      mergedResult[item.id] = { ...item };
+    } else {
+      mergedResult[item.id].quantity =
+        Number(mergedResult[item.id].quantity) + Number(item.quantity);
+    }
+  });
+
+  const mergedArray = Object.values(mergedResult);
+
+  const cartItemsUL = (
     <ul className={classes["cart-items"]}>
-      {[{ id: "c1", name: "Sushi", amount: 2, price: 12.99 }].map((item) => (
-        <li>{item.name}</li>
+      {mergedArray.map((item) => (
+        <CartItem
+          key={item.id}
+          name={item.name}
+          quantity={item.quantity}
+          price={item.price}
+        />
       ))}
     </ul>
   );
 
+  let totalPrice = 0;
+  cartItems.forEach(
+    (item) => (totalPrice += Number(item.price) * Number(item.quantity))
+  );
+  totalPrice = totalPrice.toFixed(2);
   return (
     <Modal onClose={props.onHideCart}>
-      {cartItems}
+      {cartItemsUL}
       <div className={classes.total}>
         <span>Total Amount</span>
-        <span>35.62</span>
+        <span>{totalPrice}</span>
       </div>
       <div className={classes.actions}>
         <button className={classes["button--alt"]} onClick={props.onHideCart}>

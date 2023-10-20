@@ -19,6 +19,16 @@ const Cart = (props) => {
     }
   });
 
+  const cartItemRemoveHandler = (id) => {
+    cartCtx.removeItem(id);
+    // console.log("after removing>>", cartCtx.items);
+  };
+
+  const cartItemAddHandler = (item) => {
+    cartCtx.addItem({ ...item, quantity: 1 });
+    // console.log("after adding>>", cartCtx.items);
+  };
+
   const mergedArray = Object.values(mergedResult);
 
   const cartItemsUL = (
@@ -29,6 +39,8 @@ const Cart = (props) => {
           name={item.name}
           quantity={item.quantity}
           price={item.price}
+          onRemove={cartItemRemoveHandler.bind(null, item.id)}
+          onAdd={cartItemAddHandler.bind(null, item)}
         />
       ))}
     </ul>

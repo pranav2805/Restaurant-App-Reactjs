@@ -7,10 +7,34 @@ const CartProvider = (props) => {
   const addItemToCartHandler = (item) => {
     const updatedItems = [...items];
     updatedItems.push(item);
-    setItems(updatedItems);
+    const mergedItems = {};
+    updatedItems.forEach((item) => {
+      if (!mergedItems[item.id]) {
+        mergedItems[item.id] = { ...item };
+      } else {
+        mergedItems[item.id].quantity += item.quantity;
+      }
+    });
+    const mergedArray = Object.values(mergedItems);
+    setItems(mergedArray);
   };
 
-  const removeItemFromCartHandler = (id) => {};
+  const removeItemFromCartHandler = (id) => {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === id) {
+        if (Number(items[i].quantity) === 1) {
+          const updatedItems = items.filter((item) => item.id !== id);
+          setItems(updatedItems);
+        } else {
+          items[i].quantity -= 1;
+          //   console.log(items);
+          const updatedItems = [...items];
+          setItems(updatedItems);
+          break;
+        }
+      }
+    }
+  };
   const cartContext = {
     items: items,
     addItem: addItemToCartHandler,
